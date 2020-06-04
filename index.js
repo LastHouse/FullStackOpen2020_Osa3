@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
-app.use(express.static('build'));
+const Person = require('./models/person');
 
+app.use(express.static('build'));
 app.use(express.json());
 app.use(
   morgan(
@@ -66,13 +68,15 @@ app.get('/', (req, res) => {
 
 // Get all
 
-app.get('/api/persons', (req, res) => {
-  res.json(persons);
+app.get('/api/people', (req, res) => {
+  Person.find({}).then((people) => {
+    res.json(people);
+  });
 });
 
 // Get one
 
-app.get('/api/persons/:id', (request, response) => {
+/* app.get('/api/people/:id', (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((p) => p.id === id);
 
@@ -83,6 +87,12 @@ app.get('/api/persons/:id', (request, response) => {
       error: 'given id does not exist',
     });
   }
+}); */
+
+app.get('/api/people/:id', (request, response) => {
+  Person.findById(request.params.id).then((person) => {
+    response.json(person);
+  });
 });
 
 // Info
@@ -97,7 +107,7 @@ app.get('/info', (request, response) => {
 
 // Delete one
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/people/:id', (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((p) => p.id !== id);
 
@@ -108,21 +118,21 @@ app.delete('/api/persons/:id', (request, response) => {
 
 morgan.token('person', (request, response) => response.person);
 
-const generateId = () => {
+/* const generateId = () => {
   //const maxId = persons.length > 0 ? Math.max(...persons.map((p) => p.id)) : 0;
   const id = Math.floor(Math.random() * 1000000);
   return id;
-};
+}; */
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/people', (request, response) => {
   const body = request.body;
 
-  if (!body.name) {
+  if (body.name === undefined) {
     return response.status(400).json({
       error: 'name missing',
     });
   }
-  if (!body.number) {
+  if (body.number === undefined) {
     return response.status(400).json({
       error: 'number missing',
     });
@@ -137,17 +147,14 @@ app.post('/api/persons', (request, response) => {
   const person = {
     name: body.name,
     number: body.number,
-    id: generateId(),
   };
 
-  response.person = JSON.stringify({ name: body.name, number: body.number });
-
-  persons = persons.concat(person);
-
-  response.json(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
