@@ -2,4 +2,5 @@
 
 Running on Heroku
 
-- [Heroku](https://fierce-sands-64859.herokuapp.com/api/people)
+- [UI](https://fierce-sands-64859.herokuapp.com)
+- [API](https://fierce-sands-64859.herokuapp.com/api/people)
