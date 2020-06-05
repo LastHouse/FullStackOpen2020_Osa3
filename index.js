@@ -58,7 +58,7 @@ app.get('/info', (request, response) => {
 // Delete one
 
 app.delete('/api/people/:id', (request, response, next) => {
-  Note.findByIdAndRemove(request.params.id)
+  Person.findByIdAndRemove(request.params.id)
     .then((result) => {
       response.status(204).end();
     })
