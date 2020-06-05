@@ -1,7 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-require('dotenv').config();
+
 const morgan = require('morgan');
 const Person = require('./models/person');
 
@@ -15,7 +16,7 @@ app.use(express.static('build'));
 
 app.use(express.json());
 
-app.use(logger);
+//app.use(logger);
 
 app.use(
   morgan(
@@ -94,6 +95,16 @@ app.get('/api/people', (req, res) => {
   }
 }); */
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(error);
+};
+
 app.get('/api/people/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
@@ -109,6 +120,8 @@ app.get('/api/people/:id', (request, response, next) => {
 app.use(errorHandler);
 
 // Info
+
+// TÄMÄ EI TOIMI VIELÄ!!!
 
 app.get('/info', (request, response) => {
   const info = persons.length;
@@ -152,16 +165,16 @@ app.post('/api/people', (request, response) => {
     });
   }
 
-  if (persons.find((person) => person.name === body.name)) {
+  /* if (persons.find((person) => person.name === body.name)) {
     return response.status(400).json({
       error: 'name must be unique',
     });
-  }
+  } */
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
   person.save().then((savedPerson) => {
     response.json(savedPerson);
@@ -192,16 +205,6 @@ const unknownEndpoint = (request, response) => {
 };
 
 app.use(unknownEndpoint);
-
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' });
-  }
-
-  next(error);
-};
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
