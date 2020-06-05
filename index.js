@@ -13,8 +13,6 @@ app.use(bodyParser.json());
 app.use(express.static('build'));
 app.use(express.json());
 
-//app.use(logger);
-
 app.use(
   morgan(
     ':method :url :res[content-length] - :response-time ms :date[web] :person'
@@ -45,14 +43,15 @@ app.get('/api/people/:id', (request, response, next) => {
 
 // Info
 
-// TÄMÄ EI TOIMI VIELÄ!!!
-
-app.get('/info', (request, response) => {
-  const info = persons.length;
+app.get('/info', (request, response, next) => {
   const date = new Date();
-  response.send(
-    '<p>Phonebook has info for ' + info + ' people</p><br><br>' + date
-  );
+  Person.find({})
+    .then((people) => {
+      response.send(
+        '<p>Phonebook has info for ' + people.length + ' people</p><br>' + date
+      );
+    })
+    .catch((error) => next(error));
 });
 
 // Delete one
@@ -83,12 +82,6 @@ app.post('/api/people', (request, response) => {
     });
   }
 
-  /* if (persons.find((person) => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique',
-    });
-  } */
-
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -116,7 +109,7 @@ app.put('/api/people/:id', (request, response, next) => {
     .catch((error) => next(error));
 });
 
-//_________________________
+// Error handling
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
