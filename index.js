@@ -1,7 +1,6 @@
-require('dotenv').config();
-
 const express = require('express');
 const app = express();
+require('dotenv').config();
 const bodyParser = require('body-parser');
 
 const Person = require('./models/person');
@@ -11,9 +10,7 @@ const cors = require('cors');
 app.use(cors());
 
 app.use(bodyParser.json());
-
 app.use(express.static('build'));
-
 app.use(express.json());
 
 //app.use(logger);
@@ -34,16 +31,6 @@ app.get('/api/people', (req, res) => {
 
 // Get one
 
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' });
-  }
-
-  next(error);
-};
-
 app.get('/api/people/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
@@ -55,8 +42,6 @@ app.get('/api/people/:id', (request, response, next) => {
     })
     .catch((error) => next(error));
 });
-
-app.use(errorHandler);
 
 // Info
 
@@ -138,6 +123,18 @@ const unknownEndpoint = (request, response) => {
 };
 
 app.use(unknownEndpoint);
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
