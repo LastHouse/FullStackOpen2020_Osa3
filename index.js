@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+require('dotenv').config();
 
-const morgan = require('morgan');
 const Person = require('./models/person');
-
+const morgan = require('morgan');
 const cors = require('cors');
 
 app.use(cors());
@@ -23,54 +23,6 @@ app.use(
   )
 );
 
-let people = [
-  {
-    name: 'Teemu',
-    number: '09888776655',
-    id: 1,
-  },
-  {
-    name: 'Pepe',
-    number: '09-23454345',
-    id: 3,
-  },
-  {
-    name: 'Igor Oujee',
-    number: '9090909',
-    id: 4,
-  },
-  {
-    name: 'teemu',
-    number: '9090909',
-    id: 5,
-  },
-  {
-    name: 'Jimmy',
-    number: '7',
-    id: 6,
-  },
-  {
-    name: 'Mary',
-    number: '09-53534553',
-    id: 7,
-  },
-  {
-    name: 'john',
-    number: '67676',
-    id: 8,
-  },
-  {
-    name: 'Harry',
-    number: '98786786',
-    id: 9,
-  },
-  {
-    name: 'Pedro',
-    number: '7677',
-    id: 10,
-  },
-];
-
 // Get all
 
 app.get('/api/people', (req, res) => {
@@ -80,19 +32,6 @@ app.get('/api/people', (req, res) => {
 });
 
 // Get one
-
-/* app.get('/api/people/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((p) => p.id === id);
-
-  if (person) {
-    response.json(person);
-  } else {
-    return response.status(404).json({
-      error: 'given id does not exist',
-    });
-  }
-}); */
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
@@ -143,12 +82,6 @@ app.delete('/api/people/:id', (request, response, next) => {
 // Add a new person
 
 morgan.token('person', (request, response) => response.person);
-
-/* const generateId = () => {
-  //const maxId = persons.length > 0 ? Math.max(...persons.map((p) => p.id)) : 0;
-  const id = Math.floor(Math.random() * 1000000);
-  return id;
-}; */
 
 app.post('/api/people', (request, response) => {
   const body = request.body;
@@ -206,6 +139,7 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint);
 
 const PORT = process.env.PORT;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
