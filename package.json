@@ -24,10 +24,14 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.17",
     "mongoose-unique-validator": "^2.0.3",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "lodash": ">=4.17.19",
+    "bl": ">=2.2.1"
   },
   "devDependencies": {
     "eslint": "^7.1.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "lodash": ">=4.17.19",
+    "bl": ">=2.2.1"
   }
 }
